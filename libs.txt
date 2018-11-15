@@ -1,0 +1,19 @@
+Windows:
+
+для обработки звука (определение длины, нарезка, конвертирование):
+ffmpeg и оболочка для нее на python - pydub
+
+для распознавания речи из аудиофайла:
+SpeechRecognition (https://pypi.org/project/SpeechRecognition/)
+поддерживает слидующие технологии:
+
+-CMU Sphinx (works offline)
+-Google Speech Recognition
+-Google Cloud Speech API
+-Wit.ai
+-Microsoft Bing Voice Recognition
+-Houndify API
+-IBM Speech to Text
+-Snowboy Hotword Detection (works offline)
+
+использую google, она первая заработала и нет лимитов на количество запросов
