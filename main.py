@@ -1,6 +1,7 @@
 import sys
 import preprocessor as pr
 import sync
+
 PREPROCESSOR_PATH = "prep.txt"
 
 
