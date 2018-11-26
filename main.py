@@ -27,6 +27,10 @@ def syncronize(argv):
 
 
 if __name__ == "__main__":
+    '''Use --preprocessor <audio_path.mp3> <book_path.fb2>
+       Use sync after preprocessor(!)
+       Use --sync <audio_path.mp3> <book_path.fb2> <seconds count>
+    '''
     argv = sys.argv
     if len(argv) < 4:
         exit(1)
