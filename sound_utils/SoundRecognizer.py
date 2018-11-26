@@ -1,6 +1,7 @@
 from pydub import AudioSegment
 import speech_recognition as sr
 import os
+import datetime
 
 
 class SoundRecognizer:
@@ -51,3 +52,16 @@ class SoundRecognizer:
 
     def get_block_counts(self):
         return self.block_counts
+
+    def recognize_with_sphinx(self):
+        audio = self.cut_file(0, 60)
+        self._save_audio_to_wav(audio)
+        r = sr.Recognizer()
+        with sr.AudioFile(self.wav_file_name) as source:
+            audio = r.record(source)
+            print("rec...")
+            time1 = datetime.datetime.now()
+            recognized_text = r.recognize_sphinx(audio)
+            time2 = datetime.datetime.now()
+            print("Time: " + str(time2 - time1))
+        return recognized_text
