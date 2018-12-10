@@ -2,7 +2,7 @@ import sound_utils.SoundRecognizer as sr
 import text_utils.book as book
 
 DIVIDER = '\n'
-MIN_BLOCK_SIZE = 15
+MIN_BLOCK_SIZE = 20
 RECOGNIZED_FILE_PATH = "recognized.txt"
 BOOK_FILE_PATH = "book.txt"
 
@@ -16,7 +16,8 @@ class Preprocessor:
     def preprocess(self):
         # recognize mp3 file and get text
         sound_recognizer = sr.SoundRecognizer(self.mp3_path, MIN_BLOCK_SIZE)
-        recognized_text = sound_recognizer.recognize()
+
+        recognized_text = sound_recognizer.recognize(show_steps=True, book_path=self.book_path)
         block_counts = sound_recognizer.get_block_counts()
 
         # open book and get book text

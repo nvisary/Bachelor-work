@@ -2,6 +2,8 @@ from pydub import AudioSegment
 import speech_recognition as sr
 import os
 import datetime
+import text_utils.book as book
+import text_utils.text_analyzer as analyzer
 
 
 class SoundRecognizer:
@@ -25,14 +27,31 @@ class SoundRecognizer:
 
         return recognized_text
 
-    def recognize(self):
+    def recognize(self, show_steps=False, book_path="res/harry.fb2"):
         audio_length = self.get_audio_length()
         recognized_text = ""
-        for i in range(int(audio_length / self.MIN_BLOCK_SIZE)):
+        count_blocks = int(audio_length / self.MIN_BLOCK_SIZE)
+        book_worker = book.BookWorker(book_path)
+        book_text = book_worker.get_book_text()
+        book_text = book_text.split()
+
+        last = 0
+        last_block = ""
+        if show_steps:
+            print("Recognition file " + self.AUDIO_IN)
+        for i in range(count_blocks):
             time1 = i * self.MIN_BLOCK_SIZE
             time2 = time1 + self.MIN_BLOCK_SIZE
             recognized_block = self.recognize_on_time(time1, time2)
+            if show_steps:
+                print("Block: " + str(i + 1) + "/" + str(count_blocks))
             count_words = len(recognized_block.split())
+            book_block = book_text[last: last + count_words]
+            print(book_block)
+            print(recognized_block.split())
+            print("Compare: " + str(analyzer.jacquard_coefficient(recognized_block.split(), book_block)))
+            last += count_words
+
             self.block_counts.append(count_words)
             recognized_text += " " + recognized_block
 

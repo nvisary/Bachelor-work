@@ -1,11 +1,12 @@
-import pygame
+#import pygame
 import time
 from pydub import AudioSegment
 
 import text_utils.book
 
 CUTTED_MP3_PATH = "res/cutted.mp3"
-PLAY_MUSIC = True
+PLAY_MUSIC = False
+
 PLAY_MUSIC_TIME = 10  # play first seconds
 
 
