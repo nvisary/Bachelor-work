@@ -29,9 +29,9 @@ def preprocessor(argv):
 
 
 def syncronize(argv):
-    mp3_path = argv[2]
-    book_path = argv[3]
-    second = int(argv[4])
+    mp3_path = argv[0]
+    book_path = argv[1]
+    second = int(argv[2])
     print("You run sync.")
     print("Path to mp3: " + mp3_path)
     print("Path to book: " + book_path)
@@ -57,6 +57,8 @@ if __name__ == "__main__":
         play(args.play[0], args.play[1], args.play[2])
     if args.self_test_db:
         print("self")
+    if args.sync:
+        syncronize(args.sync)
 
 
 
