@@ -17,7 +17,7 @@ class Preprocessor:
         # recognize mp3 file and get text
         sound_recognizer = sr.SoundRecognizer(self.mp3_path, MIN_BLOCK_SIZE)
 
-        recognized_text = sound_recognizer.recognize(show_steps=True, book_path=self.book_path)
+        recognized_text = sound_recognizer.recognize(show_steps=False, book_path=self.book_path)
         block_counts = sound_recognizer.get_block_counts()
 
         # open book and get book text
@@ -27,7 +27,6 @@ class Preprocessor:
         # save recognize text to file
         recognized_file = open(RECOGNIZED_FILE_PATH, "w")
         recognized_file.write(recognized_text)
-        recognized_file.close()
 
         # save book text to file
         book_file = open(BOOK_FILE_PATH, "w")
@@ -44,3 +43,6 @@ class Preprocessor:
         preprocessor_file.close()
         book_file.close()
         recognized_file.close()
+
+    def find_padding(self, book_text, recognized_text):
+        pass

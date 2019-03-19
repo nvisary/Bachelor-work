@@ -55,4 +55,8 @@ if __name__ == "__main__":
         initial_sync(args.initial_sync[0], args.initial_sync[1], args.initial_sync[2])
     if args.play:
         play(args.play[0], args.play[1], args.play[2])
+    if args.self_test_db:
+        print("self")
+
+
 

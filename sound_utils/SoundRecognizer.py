@@ -49,7 +49,7 @@ class SoundRecognizer:
             book_block = book_text[last: last + count_words]
             print(book_block)
             print(recognized_block.split())
-            print("Compare: " + str(analyzer.jacquard_coefficient(recognized_block.split(), book_block)))
+            print("Compare: " + str(analyzer.text_compare(recognized_block.split(), book_block)))
             last += count_words
 
             self.block_counts.append(count_words)
