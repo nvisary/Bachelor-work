@@ -1,5 +1,6 @@
 import sound_utils.SoundRecognizer as sr
 import text_utils.book as book
+from text_utils.TextCipher import TextCipher
 
 DIVIDER = '\n'
 MIN_BLOCK_SIZE = 20
@@ -33,13 +34,15 @@ class Preprocessor:
         book_file.write(book_text)
 
         # write data to preprocessor file
-        preprocessor_file = open(self.preprocessor_path, "w")
-
-        preprocessor_file.write(str(MIN_BLOCK_SIZE) + DIVIDER)  # min block size of recognize audio (seconds)
+        preprocessor_file = open(self.preprocessor_path, "wb")
+        db_data = str(MIN_BLOCK_SIZE) + DIVIDER  # min block size of recognize audio (seconds)
 
         for block_count in block_counts:
-            preprocessor_file.write(str(block_count) + DIVIDER)
+            db_data += str(block_count) + DIVIDER
 
+        text_cipher = TextCipher("Hello world")
+        encrypted_data = text_cipher.encrypt(db_data)
+        preprocessor_file.write(encrypted_data)
         preprocessor_file.close()
         book_file.close()
         recognized_file.close()

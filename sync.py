@@ -1,6 +1,7 @@
 import pygame
 import time
 from pydub import AudioSegment
+from text_utils.TextCipher import TextCipher
 
 import text_utils.book
 
@@ -20,7 +21,7 @@ class Sync:
         # load audio, open book, open preprocessor file
         mp3_audio = AudioSegment.from_mp3(self.mp3_path)
         book = text_utils.book.BookWorker(self.book_path)
-        preprocessor_file = open(self.preprocessor_path, "r")
+        preprocessor_file = open(self.preprocessor_path, "rb")
 
         # get book text (for fb2 return text between body tag)
         book_text = book.get_book_text()
@@ -42,9 +43,15 @@ class Sync:
             pygame.mixer.music.stop()
 
         # parse preprocessor file
+        db_data = preprocessor_file.read()
+        text_cipher = TextCipher("Hello world")
+        decoded_data = text_cipher.decrypt(db_data)
+        decoded_data = decoded_data.split("\n")
         preprocessor_parameters = []
-        for line in preprocessor_file:
-            preprocessor_parameters.append(int(line))
+        for line in decoded_data:
+            if line == '':
+                break
+            preprocessor_parameters.append(int(line.strip()))
 
         # get min block size from preprocessor
         block_size = preprocessor_parameters[0]
