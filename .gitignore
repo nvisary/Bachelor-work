@@ -1,1 +1,10 @@
 .idea/
+__pycache__/
+book.txt
+preprocessor.pyc
+res/cutted.mp3
+res/sync_bd.txt
+sound_utils/__pycache__/
+text_utils/__pycache__/
+tmp/
+recognized.txt
