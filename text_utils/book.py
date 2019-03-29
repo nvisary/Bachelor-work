@@ -30,6 +30,13 @@ class BookWorker:
                         text += el.text
         return text
 
+    def get_book_text_from_tree(self):
+        result = ""
+        for elem in self.book_tree.iter():
+            if elem.tag == FB2_TAG + "p":
+                result += elem.text
+        return result
+
     def get_book_title(self):
         title = ""
         if self.book_type == FB2_TYPE:
