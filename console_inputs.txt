@@ -1,0 +1,5 @@
+--initial-sync res/book1.mp3 res/book1.fb2 res/sync_db.txt --debug True
+--initial-sync res/book1.mp3 res/book1.fb2 res/sync_db.txt
+--initial-sync res/harry.mp3 res/harry.fb2 res/sync_db.txt
+--sync res/harry.mp3 res/harry.fb2 150
+--play res/harry.mp3 10 10

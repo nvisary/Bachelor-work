@@ -31,14 +31,13 @@ class SoundRecognizer:
         audio_length = self.get_audio_length()
         recognized_text = ""
         count_blocks = int(audio_length / self.MIN_BLOCK_SIZE)
-        book_worker = book.BookWorker(book_path)
-        book_text = book_worker.get_book_text_from_tree()
-        book_text = book_text.split()
+        #book_worker = book.BookWorker(book_path)
+        #book_text = book_worker.get_book_text_from_tree()
+        #book_text = book_text.split()
 
         last = 0
-        last_block = ""
         if show_steps:
-            print("Recognition file " + self.AUDIO_IN)
+            print("Recognition file: " + self.AUDIO_IN)
         for i in range(count_blocks):
             time1 = i * self.MIN_BLOCK_SIZE
             time2 = time1 + self.MIN_BLOCK_SIZE
@@ -46,10 +45,10 @@ class SoundRecognizer:
             if show_steps:
                 print("Block: " + str(i + 1) + "/" + str(count_blocks))
             count_words = len(recognized_block.split())
-            book_block = book_text[last: last + count_words]
-            print(book_block)
+            #book_block = book_text[last: last + count_words]
+            #print(book_block)
             print(recognized_block.split())
-            print("Compare: " + str(analyzer.text_compare(recognized_block.split(), book_block)))
+            #print("Compare: " + str(analyzer.text_compare(recognized_block.split(), book_block)))
             last += count_words
 
             self.block_counts.append(count_words)

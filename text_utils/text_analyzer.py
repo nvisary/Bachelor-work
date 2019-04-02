@@ -61,6 +61,15 @@ def levenshtein(word1, word2):
     return Levenshtein.ratio(word1, word2)
 
 
+def compare(array, array2):
+    if len(array) != len(array2):
+        return 0
+    lev = 0
+    for i in range(len(array)):
+        lev += levenshtein(array[i], array2[i])
+    return lev / len(array)
+
+
 a = """для американской литературы нехарактерные, но очень хорошо знакомые нам по литературе русской, и выделили ее 
 из ряда современных романистов и философов. Большинство ее героев на первый взгляд вычерчены графично, 
 почти в черно-белых тонах. Белым — творцы, герои; черным — паразиты, безликие ничтожества, черпающие силу в круговой 

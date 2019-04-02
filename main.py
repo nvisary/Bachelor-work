@@ -8,8 +8,8 @@ import sound_utils.Player as sound_utils
 PREPROCESSOR_PATH = "res/sync_db.txt"
 
 
-def initial_sync(mp3_path, book_path, db_path):
-    preprocessor = pr.Preprocessor(mp3_path, book_path, db_path)
+def initial_sync(mp3_path, book_path, db_path, debug):
+    preprocessor = pr.Preprocessor(mp3_path, book_path, db_path, debug)
     preprocessor.preprocess()
 
 
@@ -48,11 +48,12 @@ if __name__ == "__main__":
     parser.add_argument('--play', dest="play", action="store", nargs=3, help="Play mp3 starts from n second")
     parser.add_argument('--self-test', dest="self_test_db", action="store", nargs=1,
                         help="Self test. Use early writen db")
+    parser.add_argument('--debug', dest="debug", action="store", default=False, type=bool)
 
     args = parser.parse_args()
 
     if args.initial_sync:
-        initial_sync(args.initial_sync[0], args.initial_sync[1], args.initial_sync[2])
+        initial_sync(args.initial_sync[0], args.initial_sync[1], args.initial_sync[2], args.debug)
     if args.play:
         play(args.play[0], args.play[1], args.play[2])
     if args.self_test_db:
