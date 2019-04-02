@@ -44,6 +44,8 @@ class Sync:
 
         # parse preprocessor file
         db_data = preprocessor_file.read()
+
+        # data decrypt
         text_cipher = TextCipher("Hello world")
         decoded_data = text_cipher.decrypt(db_data)
         decoded_data = decoded_data.split("\n")
