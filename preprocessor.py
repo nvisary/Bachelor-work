@@ -18,12 +18,12 @@ class Preprocessor:
         # recognize mp3 file and get text
         sound_recognizer = sr.SoundRecognizer(self.mp3_path, MIN_BLOCK_SIZE)
 
-        recognized_text = sound_recognizer.recognize(show_steps=False, book_path=self.book_path)
+        recognized_text = sound_recognizer.recognize(show_steps=True, book_path=self.book_path)
         block_counts = sound_recognizer.get_block_counts()
 
         # open book and get book text
         book_worker = book.BookWorker(self.book_path)
-        book_text = book_worker.get_book_text()
+        book_text = book_worker.get_book_text_from_tree()
 
         # save recognize text to file
         recognized_file = open(RECOGNIZED_FILE_PATH, "w")

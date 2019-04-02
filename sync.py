@@ -24,7 +24,7 @@ class Sync:
         preprocessor_file = open(self.preprocessor_path, "rb")
 
         # get book text (for fb2 return text between body tag)
-        book_text = book.get_book_text()
+        book_text = book.get_book_text_from_tree()
 
         # cut audio by sec and save it
         mp3_audio = mp3_audio[second * 1000:]

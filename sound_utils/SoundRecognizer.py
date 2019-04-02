@@ -32,7 +32,7 @@ class SoundRecognizer:
         recognized_text = ""
         count_blocks = int(audio_length / self.MIN_BLOCK_SIZE)
         book_worker = book.BookWorker(book_path)
-        book_text = book_worker.get_book_text()
+        book_text = book_worker.get_book_text_from_tree()
         book_text = book_text.split()
 
         last = 0

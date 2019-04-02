@@ -33,7 +33,7 @@ class BookWorker:
     def get_book_text_from_tree(self):
         result = ""
         for elem in self.book_tree.iter():
-            if elem.tag == FB2_TAG + "p":
+            if elem.tag == FB2_TAG + "p" and elem.text is not None:
                 result += elem.text
         return result
 
