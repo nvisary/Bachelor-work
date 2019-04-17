@@ -8,6 +8,7 @@ MIN_BLOCK_SIZE = 20
 RECOGNIZED_FILE_PATH = "recognized.txt"
 BOOK_FILE_PATH = "book.txt"
 COMPARE_LIMIT = 0.5
+ENCRYPTION = True
 
 
 class Preprocessor:
@@ -52,8 +53,11 @@ class Preprocessor:
             db_data += str(block_count) + DIVIDER
 
         text_cipher = TextCipher("Hello world")
-        encrypted_data = text_cipher.encrypt(db_data)
-        preprocessor_file.write(encrypted_data)
+        if ENCRYPTION:
+            db_data = text_cipher.encrypt(db_data)
+        else:
+            db_data = db_data.encode("UTF-8")
+        preprocessor_file.write(db_data)
         preprocessor_file.close()
         book_file.close()
         recognized_file.close()

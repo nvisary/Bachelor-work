@@ -3,9 +3,9 @@ import preprocessor as pr
 import sync
 import argparse
 import sound_utils.Player as sound_utils
+import os
 
-
-PREPROCESSOR_PATH = "res/sync_db.txt"
+PREPROCESSOR_PATH = os.path.dirname(__file__) + "/res/sync_db.txt"
 
 
 def initial_sync(mp3_path, book_path, db_path, debug):
@@ -37,14 +37,26 @@ def syncronize(argv):
     print("Path to book: " + book_path)
     print("Run from sec: " + str(second))
     synchronizer = sync.Sync(PREPROCESSOR_PATH, mp3_path, book_path)
-    synchronizer.sync_from(second)
+    synchronizer.sync_from_audio(second)
 
+
+def reverse_sync(argv):
+    mp3_path = argv[0]
+    book_path = argv[1]
+    word = int(argv[2])
+    print("You run reverse-sync.")
+    print("Path to mp3: " + mp3_path)
+    print("Path to book: " + book_path)
+    print("Run from word: " + str(word))
+    synchronizer = sync.Sync(PREPROCESSOR_PATH, mp3_path, book_path)
+    synchronizer.sync_from_text(word)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Synchronize audio book and fb2 book.")
     parser.add_argument('--initial-sync', dest="initial_sync", action="store", nargs=3,
                         help="Initial sync")
     parser.add_argument('--sync', dest="sync", action="store", nargs=3, help="Sync mp3 and fb2 on seconds range")
+    parser.add_argument("--reverse-sync", dest="reverse_sync", action="store", nargs=3, help="Sync mp3 and fb2 on word")
     parser.add_argument('--play', dest="play", action="store", nargs=3, help="Play mp3 starts from n second")
     parser.add_argument('--self-test', dest="self_test_db", action="store", nargs=1,
                         help="Self test. Use early writen db")
@@ -60,6 +72,9 @@ if __name__ == "__main__":
         print("self")
     if args.sync:
         syncronize(args.sync)
+    if args.reverse_sync:
+        reverse_sync(args.reverse_sync)
+
 
 
 
