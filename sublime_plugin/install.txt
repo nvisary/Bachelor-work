@@ -1,0 +1,15 @@
+Sublime Text 3
+windows:
+move plugin.py to C:\Users\{User name}\AppData\Roaming\Sublime Text 3\Packages\User
+linux:
+move plugin.py to ~/.config/sublime-text-3/Packages
+
+short key for this plugin is ctrl + shift + p
+To use short key:
+1. Open sublime
+2. Go to Preferences -> Key Bindings
+3. Paste this:
+[
+	{ "keys": ["ctrl+shift+p"], "command": "test" }
+]
+4. Select text and run plugin ctrl + shift + p
