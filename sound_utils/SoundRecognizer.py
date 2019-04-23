@@ -6,6 +6,7 @@ import text_utils.book as book
 import text_utils.text_analyzer as analyzer
 
 
+
 class SoundRecognizer:
     """Class recognize speech from audio mp3"""
 

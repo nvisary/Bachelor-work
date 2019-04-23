@@ -64,6 +64,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+
     if args.initial_sync:
         initial_sync(args.initial_sync[0], args.initial_sync[1], args.initial_sync[2], args.debug)
     if args.play:

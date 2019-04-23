@@ -5,6 +5,7 @@ from text_utils.TextCipher import TextCipher
 import os
 import text_utils.book
 
+
 CUTTED_MP3_PATH = os.path.dirname(__file__) + "/res/cutted.mp3"
 PLAY_MUSIC = True
 
@@ -104,16 +105,25 @@ class Sync:
 
             last_count_words = current_count_words
             print("sec:{} count:{} limit:{}".format(current_sec, current_count_words, word_number))
+
         # cut audio by sec and save it
         mp3_audio = AudioSegment.from_mp3(self.mp3_path)
         mp3_audio = mp3_audio[result_second * 1000:]
-        mp3_audio.export(CUTTED_MP3_PATH, format="mp3")
-        pygame.init()
+        mp3_audio.export(os.path.dirname(__file__) + "/res/cutted.wav", format="wav")
 
-        DISPLAYSURF = pygame.display.set_mode((400, 300))
-        pygame.display.set_caption(CUTTED_MP3_PATH)
+        import sys
+        sys.argv = [sys.argv[0]]
+        from gui.audio_player import AudioPlayer
 
-        pygame.mixer.music.load(CUTTED_MP3_PATH)
-        pygame.mixer.music.play()
-        time.sleep(PLAY_MUSIC_TIME)
-        pygame.mixer.music.stop()
+        player = AudioPlayer()
+        player.run()
+
+        #pygame.init()
+
+        #DISPLAYSURF = pygame.display.set_mode((400, 300))
+        #pygame.display.set_caption(CUTTED_MP3_PATH)
+
+        #pygame.mixer.music.load(CUTTED_MP3_PATH)
+        #pygame.mixer.music.play()
+        #time.sleep(PLAY_MUSIC_TIME)
+        #pygame.mixer.music.stop()
