@@ -20,8 +20,8 @@ class TestCommand(sublime_plugin.TextCommand):
             selected_word += 1
         print("selected word: {}".format(selected_word))
         path = os.path.dirname(view_name)
-        print("python " + path + "\\main.py --reverse-sync " + path + "/res/harry.mp3 " + path + "/res/harry.fb2 {}".format(
+        print("python " + path + "\\main.py --reverse-sync " + path + "/res/book1.mp3 " + path + "/res/book1.fb2 {}".format(
                 selected_word))
         os.system(
-            "python " + path + "\\main.py --reverse-sync " + path + "/res/harry.mp3 " + path + "/res/harry.fb2 {}".format(
+            "python " + path + "\\main.py --reverse-sync " + path + "/res/book1.mp3 " + path + "/res/book1.fb2 {}".format(
                 selected_word))

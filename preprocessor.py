@@ -12,11 +12,14 @@ ENCRYPTION = True
 
 
 class Preprocessor:
-    def __init__(self, path_to_mp3, path_to_book, preprocessor_path, debug):
+    def __init__(self, path_to_mp3, path_to_book, preprocessor_path, debug=False, recognized_path=RECOGNIZED_FILE_PATH,
+                 book_txt_path=BOOK_FILE_PATH):
         self.mp3_path = path_to_mp3
         self.book_path = path_to_book
         self.preprocessor_path = preprocessor_path
         self.debug = debug
+        self.recognized_path = recognized_path
+        self.book_txt_path = book_txt_path
 
     def preprocess(self):
         # recognize mp3 file and get text
@@ -33,16 +36,16 @@ class Preprocessor:
 
         # save recognize text to file
         if not self.debug:
-            recognized_file = open(RECOGNIZED_FILE_PATH, "w")
+            recognized_file = open(self.recognized_path, "w")
             recognized_file.write(recognized_text)
         else:
-            recognized_file = open(RECOGNIZED_FILE_PATH, "r")
+            recognized_file = open(self.recognized_path, "r")
             recognized_text = recognized_file.read()
             self.find_padding(book_text, recognized_text)
 
         # save book text to file
 
-        book_file = open(BOOK_FILE_PATH, "w")
+        book_file = open(self.book_txt_path, "w")
         book_file.write(book_text)
 
         # write data to preprocessor file

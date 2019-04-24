@@ -8,7 +8,7 @@ import text_utils.book
 
 CUTTED_MP3_PATH = os.path.dirname(__file__) + "/res/cutted.mp3"
 PLAY_MUSIC = True
-
+PYGAME_PLAYER = False
 PLAY_MUSIC_TIME = 10  # play first seconds
 
 

@@ -28,7 +28,7 @@ class SoundRecognizer:
 
         return recognized_text
 
-    def recognize(self, show_steps=False, book_path="res/harry.fb2"):
+    def recognize(self, show_steps=False, book_path="res/book1.fb2"):
         audio_length = self.get_audio_length()
         recognized_text = ""
         count_blocks = int(audio_length / self.MIN_BLOCK_SIZE)
