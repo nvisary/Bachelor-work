@@ -25,7 +25,7 @@ class MainScreen(Screen):
     #mp3 = AudioSegment.from_mp3("res/harry.mp3")
     mp3 = AudioSegment.from_mp3("res/harry/harry-big.mp3")
     audio_length = int(len(mp3) / 1000)
-    mp3.export("res/harry/harry-big.wav")
+    mp3.export("res/harry/harry-big.wav", format="wav")
     audio = SoundLoader.load('res/harry/harry-big.wav')
     path = path.abspath(path.join(__file__, "../"))
     synchronizer = sync.Sync(path + "../res/sync_db-big.txt", path + "../res/harry.mp3", path + "../res/harry.fb2")

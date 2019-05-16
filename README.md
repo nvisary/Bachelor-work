@@ -12,7 +12,8 @@ pip install pycryptodome
     
     sudo apt-get update
     sudo apt-get install python3-kivy
-   
+    
+    Установка gstreamer - движок для обработки аудио: 
     sudo apt-get install -y \
     libgstreamer1.0 \
     gstreamer1.0-plugins-base \
@@ -55,3 +56,10 @@ pip install pycryptodome
 5. В sublime открыть файл Bachelor-work/book.txt (открывать только те файлы, которые находятся в корне проекта)
    Выделить нужное слово и нажать ctrl+shift+p
    Должен открыться терминал, а затем запуститься UI
+   
+   
+Запуск полноценного GUI. 
+1. Должна быть установлена библиотека Kivy (инструкция выше), а так же libgstreamer - движок для манипуляции с аудио-файлами
+для графической библиотеки (инструкция для установки gstreamer выше). 
+2. Запустить GUI: python Bachelor-work/gui/GUI.py
+
