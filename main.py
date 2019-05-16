@@ -5,7 +5,7 @@ import argparse
 import sound_utils.Player as sound_utils
 import os
 
-PREPROCESSOR_PATH = os.path.dirname(__file__) + "/res/sync_db.txt"
+PREPROCESSOR_PATH = os.path.dirname(__file__) + "/res/sync_db-big.txt"
 
 
 def initial_sync(mp3_path, book_path, db_path, debug):

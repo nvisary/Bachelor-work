@@ -1,0 +1,114 @@
+# File name: GUI.py
+# -*- coding: utf-8 -*
+<MainScreen>:
+    name: 'main'
+    txt_input: txt_input
+    lbl_pages: lbl_pages
+    time_slider: time_slider
+    lbl_time: lbl_time
+    btn_play: btn_play
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 2
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            size_hint: 1, .075
+            canvas.before:
+                Color:
+                    rgba: .92, .85, .75, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+
+            ImageButton:
+                source: 'lib.png'
+                size_hint: .15, .85
+                width: 10
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'lib'
+            Label:
+                text: str("Гарри Поттер").encode("cp1251").decode()
+                color: .1, .1, .1, 1
+                font_size: 20
+            Label:
+                id: lbl_pages
+                size_hint: .15, 1
+                color: .1, .1, .1, 1
+        BoxLayout:
+            size_hint: 1, .825
+            TextInput:
+                id: txt_input
+                halign: "left"
+                size_hint: 1, 1
+                strip: True
+                background_color: .92, .85, .75, 1
+                background_normal: ""
+                background_disabled_normal: ""
+                disabled_foreground_color: .1, .1, .1, 1
+                text: "Hello world"
+                disabled: True
+                on_touch_down: root.text_input_touched(args[1])
+
+        BoxLayout:
+            orientation: "horizontal"
+            padding: 0, 5
+            size_hint: 1, .1
+            spacing: 2
+            canvas.before:
+                Color:
+                    rgba: .92, .85, .75, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            ImageButton:
+                size_hint: .1, 1
+                source: 'backward.png'
+                on_press: root.audio_seek("Back")
+            ImageButton:
+                id: btn_play
+                size_hint: .1, 1
+                source: 'play.png'
+                on_press:
+                    root.play_click(args[0])
+            ImageButton:
+                size_hint: .1, 1
+                source: 'fast-forward.png'
+                on_press: root.audio_seek("Forward")
+            Label:
+                id: lbl_time
+                text: "00:00:00"
+                size_hint: .2, 1
+                color: .1, .1, .1, 1
+                font_size: 16
+            BoxLayout:
+                orientation: "horizontal"
+                padding: 5, 5, 25, 5
+                size_hint: .5, 1
+                Slider:
+                    id: time_slider
+                    value: 0
+                    min: 0
+                    max: 100
+                    value_track: True
+                    value_track_color: .28, .27, .6, 1
+                    on_touch_move: root.time_slider_moved(args[1])
+                    on_touch_up: root.time_slider_touch_up(args[1])
+
+
+
+
+<LibraryScreen>:
+    name: 'lib'
+
+    Button:
+        text: "Back"
+        on_press:
+            root.manager.transition.direction = "left"
+            root.manager.current = "main"
+
+
