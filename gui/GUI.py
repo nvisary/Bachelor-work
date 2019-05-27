@@ -26,7 +26,7 @@ Config.set('graphics', 'height', '600')
 Builder.load_file("GuiApp.kv")
 Builder.load_file("load_dialog.kv")
 PAGE_LENGTH = 1800  # symbols in page
-PATH = os.path.abspath(os.path.join(__file__, "../"))
+PATH = os.path.abspath(os.path.join(__file__, "/../"))
 
 
 class MainScreen(Screen):
@@ -211,6 +211,7 @@ class LoadDialog(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.filechooser.path = os.path.join(PATH, "../")
+
 
 class ImageButton(ButtonBehavior, Image):
     pass
