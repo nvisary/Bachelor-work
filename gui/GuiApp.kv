@@ -153,4 +153,11 @@
                 source: 'plus.png'
                 on_release: root.show_load()
 
+            Button:
+                size_hint: .1, .85
+                text: "Back"
+                on_press:
+                    root.manager.transition.direction = "left"
+                    root.manager.current = "main"
+
 
