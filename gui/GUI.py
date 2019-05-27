@@ -2,37 +2,44 @@ from kivy.app import App
 from kivy.config import Config
 from kivy.lang import Builder
 from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.boxlayout import BoxLayout
 from kivy.core.audio import SoundLoader
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.floatlayout import FloatLayout
 from kivy.clock import Clock
 from pydub import AudioSegment
+from kivy.uix.popup import Popup
+from kivy.properties import ObjectProperty
+import os
+import sys
+sys.path.append(os.path.join(sys.path[0], "../"))
 
 import math
 import text_utils.book as book
 import sync
-import os.path as path
+import os.path
 
 Config.set('graphics', 'resizable', '0')
 Config.set('graphics', 'width', '600')
 Config.set('graphics', 'height', '600')
 Builder.load_file("GuiApp.kv")
+Builder.load_file("load_dialog.kv")
 PAGE_LENGTH = 1800  # symbols in page
+PATH = os.path.abspath(os.path.join(__file__, "../"))
 
 
 class MainScreen(Screen):
-    #mp3 = AudioSegment.from_mp3("res/harry.mp3")
+    # mp3 = AudioSegment.from_mp3("res/harry.mp3")
     mp3 = AudioSegment.from_mp3("res/harry/harry-big.mp3")
     audio_length = int(len(mp3) / 1000)
     mp3.export("res/harry/harry-big.wav", format="wav")
     audio = SoundLoader.load('res/harry/harry-big.wav')
-    path = path.abspath(path.join(__file__, "../"))
-    synchronizer = sync.Sync(path + "../res/sync_db-big.txt", path + "../res/harry.mp3", path + "../res/harry.fb2")
+
+    synchronizer = sync.Sync(PATH + "../res/sync_db-big.txt", PATH + "../res/harry.mp3", PATH + "../res/harry.fb2")
     current_second = 0
     current_page = 1
-    current_selected_word = 0
-    book_worker = book.BookWorker(path + "../res/harry.fb2")
+    current_selected_word = -1
+    book_worker = book.BookWorker(PATH + "../res/harry.fb2")
     book_text = book_worker.get_book_text_from_tree()
     spliced_book = book_text.split()
     pages = int(len(book_text) / PAGE_LENGTH) + 1
@@ -75,23 +82,23 @@ class MainScreen(Screen):
             self.time_slider.value = int(self.current_second * 100 / self.audio_length)
 
             sync_word = self.synchronizer.sync_from_audio(self.current_second, False)
-            print("Sync word: ", sync_word)
+
             if sync_word != self.current_selected_word:
                 self.current_selected_word = sync_word
+
+                count_words = sync_word
                 count_symbols = 0
-                while sync_word > 0:
-                    count_symbols += len(self.spliced_book[sync_word - 1])
-                    sync_word -= 1
-                while count_symbols > PAGE_LENGTH and math.ceil(count_symbols / PAGE_LENGTH) != self.current_page:
-                    self.current_page += 1
-                    count_symbols -= PAGE_LENGTH
+                while count_words != 0:
+                    count_symbols += len(self.spliced_book[count_words - 1])
+                    count_words -= 1
+                pages = math.ceil(count_symbols / PAGE_LENGTH)
+                self.current_page = pages
                 self.update_page()
+
+                while count_symbols > PAGE_LENGTH:
+                    count_symbols -= PAGE_LENGTH
+                    print("Count symbols: ", count_symbols)
                 self.txt_input.select_text(count_symbols, count_symbols + 100)
-                #print(self.spliced_book[self.current_selected_word:sync_word])
-
-
-
-            #self.txt_input.select_text()
 
     def audio_seek(self, direction):
         if self.audio.state == "play":
@@ -151,6 +158,7 @@ class MainScreen(Screen):
         if seconds < 10:
             seconds = "0" + str(seconds)
         self.lbl_time.text = "{}:{}:{}".format(hours, minutes, seconds)
+        self.time_slider.value = int(self.current_second * 100 / self.audio_length)
 
     def text_input_touched(self, touch):
         touch_position = touch.pos
@@ -165,11 +173,43 @@ class MainScreen(Screen):
                 if self.current_page <= self.pages:
                     self.current_page += 1
                     self.update_page()
+            count_symbols = PAGE_LENGTH * self.current_page
+            count_words = 0
+            while count_symbols > 0:
+                count_symbols -= len(self.spliced_book[count_words])
+                count_words += 1
+            if self.current_page == 1:
+                self.current_second = 0
+            else:
+                self.current_second = self.synchronizer.sync_from_text(count_words, False)
+            self.update_page()
+            self.update_time()
         # Добавить обновление секунд и если включено аудио перемотка (при переключении страницы)
 
 
 class LibraryScreen(Screen):
-    pass
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+
+    def show_load(self):
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Load file", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+
+    def load(self, path, filename):
+        with open(os.path.join(path, filename[0])) as stream:
+            self.text_input.text = stream.read()
+
+        self.dismiss_popup()
+
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
+
 
 
 class ImageButton(ButtonBehavior, Image):
@@ -188,3 +228,10 @@ class GuiApp(App):
 
 
 GuiApp().run()
+
+'''Button:
+                size_hint: .15, .85
+                text: "Back"
+                on_press:
+                    root.manager.transition.direction = "left"
+                    root.manager.current = "main"'''

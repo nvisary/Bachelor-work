@@ -1,5 +1,5 @@
 # File name: GUI.py
-# -*- coding: utf-8 -*
+
 <MainScreen>:
     name: 'main'
     txt_input: txt_input
@@ -105,10 +105,52 @@
 <LibraryScreen>:
     name: 'lib'
 
-    Button:
-        text: "Back"
-        on_press:
-            root.manager.transition.direction = "left"
-            root.manager.current = "main"
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 2
+
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            size_hint: 1, .075
+            canvas.before:
+                Color:
+                    rgba: .92, .85, .75, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            Label:
+                text: "Library"
+                color: .1, .1, .1, 1
+                font_size: 20
+
+
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            size_hint: 1, .8
+            canvas.before:
+                Color:
+                    rgba: .92, .85, .75, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        BoxLayout:
+            orientation: "horizontal"
+            spacing: 10
+            size_hint: 1, .08
+            padding: 0, 5
+            canvas.before:
+                Color:
+                    rgba: .92, .85, .75, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            ImageButton:
+                size_hint: .1, 1
+                source: 'plus.png'
+                on_release: root.show_load()
 
 

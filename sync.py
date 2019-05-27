@@ -71,15 +71,21 @@ class Sync:
             for i in range(int(round(count_blocks))):
                 count_words += self.preprocessor_parameters[i + 1]
 
+            if count_blocks - int(count_blocks) > 0:
+                print(self.preprocessor_parameters[int(count_blocks) + 2] * (count_blocks - int(count_blocks)))
+                count_words += int(self.preprocessor_parameters[int(count_blocks) + 2] * (count_blocks - int(count_blocks)))
+
             # print text from count_words
             book_text = self.book_text.split()
             book_text = book_text[count_words:]
+
+
             if play:
                 print(" ".join(book_text))
             else:
                 return count_words
 
-    def sync_from_text(self, word_number):
+    def sync_from_text(self, word_number, play=True):
         # parse preprocessor file
         preprocessor_file = open(self.preprocessor_path, "rb")
         db_data = preprocessor_file.read()
@@ -99,12 +105,12 @@ class Sync:
         last_count_words = 0
         result_second = 0
         for i in range(1, len(preprocessor_parameters)):
-            current_sec += 20
+            current_sec += seconds_block_size
             current_count_words += preprocessor_parameters[i]
             if current_count_words > word_number:
-                speach_speed = (current_count_words - last_count_words) / seconds_block_size
+                speech_speed = (current_count_words - last_count_words) / seconds_block_size
                 words_to_limit = word_number - last_count_words
-                result_second = words_to_limit / speach_speed + current_sec - seconds_block_size
+                result_second = words_to_limit / speech_speed + current_sec - seconds_block_size
 
                 break
 
@@ -112,17 +118,19 @@ class Sync:
             print("sec:{} count:{} limit:{}".format(current_sec, current_count_words, word_number))
 
         # cut audio by sec and save it
-        mp3_audio = AudioSegment.from_mp3(self.mp3_path)
-        mp3_audio = mp3_audio[result_second * 1000:]
-        mp3_audio.export(os.path.dirname(__file__) + "/res/cutted.wav", format="wav")
+        if play:
+            mp3_audio = AudioSegment.from_mp3(self.mp3_path)
+            mp3_audio = mp3_audio[result_second * 1000:]
+            mp3_audio.export(os.path.dirname(__file__) + "/res/cutted.wav", format="wav")
 
-        import sys
-        sys.argv = [sys.argv[0]]
-        from gui.audio_player import AudioPlayer
+            import sys
+            sys.argv = [sys.argv[0]]
+            from gui.audio_player import AudioPlayer
 
-        player = AudioPlayer()
-        player.run()
-
+            player = AudioPlayer()
+            player.run()
+        else:
+            return result_second
         # pygame.init()
 
         # DISPLAYSURF = pygame.display.set_mode((400, 300))
@@ -132,3 +140,7 @@ class Sync:
         # pygame.mixer.music.play()
         # time.sleep(PLAY_MUSIC_TIME)
         # pygame.mixer.music.stop()
+
+
+
+
