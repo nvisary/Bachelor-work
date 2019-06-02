@@ -5,18 +5,27 @@ import datetime
 import text_utils.book as book
 import text_utils.text_analyzer as analyzer
 
+COUNT_WORDS_SEARCH = 3
 
 
 class SoundRecognizer:
     """Class recognize speech from audio mp3"""
 
-    def __init__(self, path_to_mp3, min_block_size):
+    def __init__(self, path_to_mp3, min_block_size, padding, book_path, count_words_search=COUNT_WORDS_SEARCH):
         """"""
         self.block_counts = []
         self.AUDIO_IN = path_to_mp3
         self.WAV_FOLDER = "tmp/"
         self.audio_mp3 = AudioSegment.from_mp3(self.AUDIO_IN)
         self.MIN_BLOCK_SIZE = min_block_size  # seconds
+        self.speech_speed = 124  # words in minute
+        self.padding = padding
+        self.book_path = book_path
+        self.count_words_search = count_words_search
+
+        self.search_success = 0
+        self.search_fail = 0
+        self.searches = 0
 
     def recognize_on_time(self, time1, time2):
         cutted_audio = self.cut_file(time1, time2)
@@ -28,34 +37,88 @@ class SoundRecognizer:
 
         return recognized_text
 
-    def recognize(self, show_steps=False, book_path="res/book1.fb2"):
+    def recognize(self, show_steps=False):
         audio_length = self.get_audio_length()
         recognized_text = ""
-        count_blocks = int(audio_length / self.MIN_BLOCK_SIZE)
-        #book_worker = book.BookWorker(book_path)
-        #book_text = book_worker.get_book_text_from_tree()
-        #book_text = book_text.split()
-
+        count_blocks = int(audio_length / (self.MIN_BLOCK_SIZE + self.padding))
+        # self.speech_speed = self.compute_speech_speed()
+        book_worker = book.BookWorker(self.book_path)
+        book_text = book_worker.get_book_text_from_tree()
+        book_text = book_text.split()
+        print(book_text)
         last = 0
+        founds = 0
+        not_founds = 0
+        count = 0
         if show_steps:
             print("Recognition file: " + self.AUDIO_IN)
         for i in range(count_blocks):
-            time1 = i * self.MIN_BLOCK_SIZE
+            time1 = i * (self.MIN_BLOCK_SIZE + self.padding)
             time2 = time1 + self.MIN_BLOCK_SIZE
+            print("{}:{}".format(time1, time2))
+
             recognized_block = self.recognize_on_time(time1, time2)
+            recognized_block_array = recognized_block.split()
             if show_steps:
                 print("Block: " + str(i + 1) + "/" + str(count_blocks))
-            count_words = len(recognized_block.split())
-            #book_block = book_text[last: last + count_words]
-            #print(book_block)
-            print(recognized_block.split())
-            #print("Compare: " + str(analyzer.text_compare(recognized_block.split(), book_block)))
-            last += count_words
 
+            speech_speed_in_second = self.speech_speed / 60
+            left_search_border = int(speech_speed_in_second * time1 - 200)
+            right_search_border = int(speech_speed_in_second * time2 + 200)
+            if left_search_border < 0:
+                left_search_border = 0
+
+            i = left_search_border
+            found = False
+            count_words = 0
+            j = 0
+
+            while j + 3 < len(recognized_block_array):
+                while i < right_search_border:
+                    lev = analyzer.get_levenshtein(recognized_block_array[j:j + self.count_words_search],
+                                                   book_text[i: i + self.count_words_search])
+                    if lev > 0.6:
+                        print(recognized_block_array[j:j + self.count_words_search])
+                        print(book_text[i: i + self.count_words_search])
+                        count_words = i
+
+                        found = True
+                        break
+                    i += 1
+                if found:
+                    break
+                j += 1
+            count += 1
+            if found:
+                founds += 1
+                print("Found")
+                self.search_success += 1
+            else:
+                not_founds += 1
+                print("Not found")
+                self.search_fail += 1
+                count_words = int(speech_speed_in_second * time1)
+            self.searches += 1
+            last += count_words
+            print("count:", last)
             self.block_counts.append(count_words)
             recognized_text += " " + recognized_block
-
+        print("Founds: ", founds)
+        print("Not founds: ", not_founds)
+        print("Words: ", count)
+        print(self.block_counts)
         return recognized_text
+
+    def compute_speech_speed(self):
+        print("Speech speed computing")
+        audio_length = self.get_audio_length()
+        first = self.recognize_on_time(10, 70)
+        second = self.recognize_on_time(int(audio_length / 2), int(audio_length / 2) + 60)
+        speech_speed = int((len(first.split()) + len(second.split())) / 2)
+        return speech_speed
+
+    def get_data(self):
+        return {"searches" : self.searches, "success": self.search_success, "fail": self.search_fail}
 
     def cut_file(self, time1, time2):
         return self.audio_mp3[time1 * 1000: time2 * 1000]

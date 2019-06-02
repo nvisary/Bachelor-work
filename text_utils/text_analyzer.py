@@ -1,5 +1,5 @@
 import difflib, Levenshtein, distance
-
+import numpy as np
 
 def jacquard_coefficient(text1, text2):
     count_compare = 0
@@ -12,6 +12,15 @@ def jacquard_coefficient(text1, text2):
     a = len(text1) - 1
     b = len(text2) - 1
     return count_compare / (a + b - count_compare)
+
+
+def get_levenshtein(text1, text2):
+    if len(text1) == len(text2):
+        ratios = []
+        for i in range(len(text1)):
+            ratios.append(Levenshtein.ratio(text1[i], text2[i]))
+        return np.mean(ratios)
+    return None
 
 
 def text_compare(text_array1, text_array2):

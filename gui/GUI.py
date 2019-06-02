@@ -26,7 +26,7 @@ Config.set('graphics', 'height', '600')
 Builder.load_file("GuiApp.kv")
 Builder.load_file("load_dialog.kv")
 PAGE_LENGTH = 1800  # symbols in page
-PATH = os.path.abspath(os.path.join(__file__, "/../"))
+PATH = os.path.abspath(os.path.join(__file__, "../"))
 
 
 class MainScreen(Screen):
@@ -91,6 +91,7 @@ class MainScreen(Screen):
                 count_symbols = 0
                 while count_words != 0:
                     count_symbols += len(self.spliced_book[count_words - 1])
+                    count_symbols += 1  # space between words
                     count_words -= 1
                 pages = math.ceil(count_symbols / PAGE_LENGTH)
                 self.current_page = pages
@@ -98,7 +99,6 @@ class MainScreen(Screen):
 
                 while count_symbols > PAGE_LENGTH:
                     count_symbols -= PAGE_LENGTH
-                    print("Count symbols: ", count_symbols)
                 self.txt_input.select_text(count_symbols, count_symbols + 100)
 
     def audio_seek(self, direction):
@@ -176,8 +176,12 @@ class MainScreen(Screen):
                     self.update_page()
             count_symbols = PAGE_LENGTH * self.current_page
             count_words = 0
+            audio_played = self.audio.state == "play"
+            if audio_played:
+                self.stop_audio()
             while count_symbols > 0:
                 count_symbols -= len(self.spliced_book[count_words])
+                count_symbols -= 1
                 count_words += 1
             if self.current_page == 1:
                 self.current_second = 0
@@ -185,6 +189,8 @@ class MainScreen(Screen):
                 self.current_second = self.synchronizer.sync_from_text(count_words, False)
             self.update_page()
             self.update_time()
+            if audio_played:
+                self.play_audio()
         # Добавить обновление секунд и если включено аудио перемотка (при переключении страницы)
 
 

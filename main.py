@@ -37,7 +37,7 @@ def syncronize(argv):
     print("Path to book: " + book_path)
     print("Run from sec: " + str(second))
     synchronizer = sync.Sync(PREPROCESSOR_PATH, mp3_path, book_path)
-    synchronizer.sync_from_audio(second)
+    synchronizer.sync_from_audio(second, play=False)
 
 
 def reverse_sync(argv):
@@ -49,7 +49,7 @@ def reverse_sync(argv):
     print("Path to book: " + book_path)
     print("Run from word: " + str(word))
     synchronizer = sync.Sync(PREPROCESSOR_PATH, mp3_path, book_path)
-    synchronizer.sync_from_text(word)
+    synchronizer.sync_from_text(word, play=False)
 
 
 def compare_test(argv):

@@ -9,6 +9,8 @@ CUTTED_MP3_PATH = os.path.dirname(__file__) + "/res/cutted.mp3"
 PLAY_MUSIC = True
 PYGAME_PLAYER = False
 PLAY_MUSIC_TIME = 10  # play first seconds
+ENCRYPTION_KEY = "Hello world"
+ENCRYPTION = False
 
 
 class Sync:
@@ -18,31 +20,35 @@ class Sync:
         self.book_path = book_path
 
         # load audio, open book, open preprocessor file
-        self.mp3_audio = AudioSegment.from_mp3(self.mp3_path)
+        # self.mp3_audio = AudioSegment.from_mp3(self.mp3_path)
         self.book = text_utils.book.BookWorker(self.book_path)
-        self.preprocessor_file = open(self.preprocessor_path, "rb")
-
+        if ENCRYPTION:
+            self.preprocessor_file = open(self.preprocessor_path, "rb")
+        else:
+            self.preprocessor_file = open(self.preprocessor_path, "r")
         # get book text (for fb2 return text between body tag)
         self.book_text = self.book.get_book_text_from_tree()
 
         # parse preprocessor file
         self.db_data = self.preprocessor_file.read()
 
-        # data decrypt
-        text_cipher = TextCipher("Hello world")
-        decoded_data = text_cipher.decrypt(self.db_data)
-        decoded_data = decoded_data.split("\n")
+        if ENCRYPTION:
+            # data decrypt
+            text_cipher = TextCipher(ENCRYPTION_KEY)
+            decoded_data = text_cipher.decrypt(self.db_data)
+            self.db_data = decoded_data
+        self.db_data = self.db_data.split("\n")
         self.preprocessor_parameters = []
-        for line in decoded_data:
+        for line in self.db_data:
             if line == '':
                 break
             self.preprocessor_parameters.append(int(line.strip()))
-
         # get min block size from preprocessor
         self.block_size = self.preprocessor_parameters[0]
+        self.padding_size = self.preprocessor_parameters[1]
 
-        # count blocks * block_size = how long audio
-        self.count_seconds = (len(self.preprocessor_parameters) - 1) * self.block_size
+        # count blocks * (block_size + padding) = how long audio
+        self.count_seconds = (len(self.preprocessor_parameters) - 2) * (self.block_size + self.padding_size)
 
     def sync_from_audio(self, second, play=True):
 
@@ -64,63 +70,46 @@ class Sync:
             pygame.mixer.music.stop()
 
         if second < self.count_seconds:
-            count_blocks = second / self.block_size
+            print("Your sec:{}".format(second))
+            block_number = second / (self.block_size + self.padding_size)
+            print("I think this is block [{}] {}".format(block_number, self.preprocessor_parameters[int(block_number) + 2]))
+            word_number = self.preprocessor_parameters[int(block_number) + 2]
+            if block_number - int(block_number) > 0:
+                print("Block num is not int")
+                next_count = self.preprocessor_parameters[int(block_number) + 3]
+                current_count = self.preprocessor_parameters[int(block_number) + 2]
+                print("Current block: ", current_count)
+                print("Next block: ", next_count)
+                word_number += (next_count - current_count) * (block_number - int(block_number))
+                print("I think it is word: ", word_number)
 
-            # count words in blocks (how many words in count_blocks)
-            count_words = 0
-            for i in range(int(round(count_blocks))):
-                count_words += self.preprocessor_parameters[i + 1]
-
-            if count_blocks - int(count_blocks) > 0:
-                print(self.preprocessor_parameters[int(count_blocks) + 2] * (count_blocks - int(count_blocks)))
-                count_words += int(self.preprocessor_parameters[int(count_blocks) + 2] * (count_blocks - int(count_blocks)))
-
-            # print text from count_words
             book_text = self.book_text.split()
-            book_text = book_text[count_words:]
-
+            book_text = book_text[int(word_number):int(word_number) + 10]
+            print(book_text)
 
             if play:
                 print(" ".join(book_text))
             else:
-                return count_words
+                return int(word_number)
 
-    def sync_from_text(self, word_number, play=True):
-        # parse preprocessor file
-        preprocessor_file = open(self.preprocessor_path, "rb")
-        db_data = preprocessor_file.read()
-        # data decrypt
-        text_cipher = TextCipher("Hello world")
-        decoded_data = text_cipher.decrypt(db_data)
-        decoded_data = decoded_data.split("\n")
-        preprocessor_parameters = []
-        for line in decoded_data:
-            if line == '':
-                break
-            preprocessor_parameters.append(int(line.strip()))
+    def sync_from_text(self, search_word, play=True):
+
         # get min block size from preprocessor
-        seconds_block_size = preprocessor_parameters[0]
-        current_sec = 0
-        current_count_words = 0
-        last_count_words = 0
-        result_second = 0
-        for i in range(1, len(preprocessor_parameters)):
-            current_sec += seconds_block_size
-            current_count_words += preprocessor_parameters[i]
-            if current_count_words > word_number:
-                speech_speed = (current_count_words - last_count_words) / seconds_block_size
-                words_to_limit = word_number - last_count_words
-                result_second = words_to_limit / speech_speed + current_sec - seconds_block_size
+        seconds_block_size = self.block_size
+        padding = self.padding_size
+        result = 0
+        second = 0
+        for i in range(3, len(self.preprocessor_parameters)):
+            second += padding + seconds_block_size
+            current_word = self.preprocessor_parameters[i]
+            if current_word >= search_word:
+                result = int(second * search_word / current_word)
 
-                break
-
-            last_count_words = current_count_words
-            print("sec:{} count:{} limit:{}".format(current_sec, current_count_words, word_number))
 
         # cut audio by sec and save it
         if play:
             mp3_audio = AudioSegment.from_mp3(self.mp3_path)
-            mp3_audio = mp3_audio[result_second * 1000:]
+            mp3_audio = mp3_audio[result * 1000:]
             mp3_audio.export(os.path.dirname(__file__) + "/res/cutted.wav", format="wav")
 
             import sys
@@ -130,7 +119,7 @@ class Sync:
             player = AudioPlayer()
             player.run()
         else:
-            return result_second
+            return result
         # pygame.init()
 
         # DISPLAYSURF = pygame.display.set_mode((400, 300))
@@ -140,7 +129,3 @@ class Sync:
         # pygame.mixer.music.play()
         # time.sleep(PLAY_MUSIC_TIME)
         # pygame.mixer.music.stop()
-
-
-
-
